@@ -85,6 +85,7 @@ const argv = yargs
     .command('glbToB3dm', 'Repackage the input glb as a b3dm with a basic header.')
     .command('glbToI3dm', 'Repackage the input glb as a i3dm with a basic header.')
     .command('b3dmToGlb', 'Extract the binary glTF asset from the input b3dm.')
+    .command('b3dmToGlbAll', 'Extract the binary glTF asset from the input b3dm for all b3dm files in the folder recursively.')
     .command('i3dmToGlb', 'Extract the binary glTF asset from the input i3dm.')
     .command('cmptToGlb', 'Extract the binary glTF assets from the input cmpt.')
     .command('optimizeB3dm', 'Pass the input b3dm through gltf-pipeline. To pass options to gltf-pipeline, place them after --options. (--options -h for gltf-pipeline help)', {
@@ -153,6 +154,8 @@ function runCommand(command, input, output, force, argv) {
         return processStage(input, output, force, command, argv);
     } else if (command === 'b3dmToGlb') {
         return readB3dmWriteGlb(input, output, force);
+    } else if (command === 'b3dmToGlbAll') {
+        return readB3dmWriteGlbAll(input, output, force);
     } else if (command === 'i3dmToGlb') {
         return readI3dmWriteGlb(input, output, force);
     } else if (command === 'cmptToGlb') {
@@ -336,6 +339,33 @@ function readB3dmWriteGlb(inputPath, outputPath, force) {
         .then(function(b3dm) {
             return fsExtra.outputFile(outputPath, extractB3dm(b3dm).glb);
         });
+}
+
+async function* readDirDeep(dir, fileNameFilter, returnDirs) {
+    const filenames = await fsExtra.readdir(dir);
+    for (let filename of filenames) {
+        const filePath = path.join(dir, filename);
+        const isDir = (await fsExtra.stat(filePath)).isDirectory();
+        if ((!isDir || returnDirs) && (!fileNameFilter || fileNameFilter(filename, filePath)))
+            yield filePath;
+        if (isDir)
+            yield* readDirDeep(filePath, fileNameFilter, returnDirs);
+    }
+}
+
+async function readB3dmWriteGlbAll(inputPath, outputPath, force) {
+    for await (let filePath of readDirDeep(inputPath, (filename) => filename.endsWith('.b3dm'))) {
+        console.log(filePath);
+        try {
+            await readB3dmWriteGlb(filePath, undefined, force);
+        }
+        catch (err) {
+            if (err.name == 'DeveloperError')
+                console.warn(err.message);
+            else
+                throw err;
+        }
+    }
 }
 
 function readI3dmWriteGlb(inputPath, outputPath, force) {

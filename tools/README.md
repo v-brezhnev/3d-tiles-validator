@@ -134,6 +134,19 @@ node ./bin/3d-tiles-tools.js b3dmToGlb -i ./specs/data/batchedWithBatchTableBina
 |`-o`, `--output`| Output path of the resulting `.glb` | No |
 |`-f`, `--force`|Overwrite output file if it exists.| No, default `false` |
 
+### b3dmToGlbAll
+
+Creates a glb from a b3dm for all b3dm files found in the directory specified as input recursivery.
+
+```
+node ./bin/3d-tiles-tools.js b3dmToGlbAll -i ./specs/data
+```
+
+| Flag | Description | Required |
+| ---- | ----------- | -------- |
+|`-i`, `--input`| Input path of the `.b3dm`| :white_check_mark: Yes |
+|`-f`, `--force`|Overwrite output file if it exists.| No, default `false` |
+
 ### i3dmToGlb
 
 Creates a glb from a i3dm. Since this tool does not process an entire tileset,
