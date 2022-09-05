@@ -147,6 +147,20 @@ node ./bin/3d-tiles-tools.js b3dmToGlbAll -i ./specs/data
 |`-i`, `--input`| Input path of the `.b3dm`| :white_check_mark: Yes |
 |`-f`, `--force`|Overwrite output file if it exists.| No, default `false` |
 
+### b3dmToGlbTilesetJson
+
+Заменяет ссылки на b3dm файлы в JSON тайлсена на glb файлы с тем же именем. Ссылки на JSON файлы заменяются на "_glb.json". Тоже самое производится с JSON файлами, на которые ведут ссылки (если они относительные).
+
+```
+node ./bin/3d-tiles-tools.js b3dmToGlbTilesetJson -i ./specs/data/TilesetOfTilesets/tileset.json
+```
+
+| Flag | Description | Required |
+| ---- | ----------- | -------- |
+|`-i`, `--input`| Input path of the `.json`| :white_check_mark: Yes |
+|`-o`, `--output`| Output path of the resulting `_glb.json` | No |
+|`-f`, `--force`|Overwrite output file if it exists.| No, default `false` |
+
 ### i3dmToGlb
 
 Creates a glb from a i3dm. Since this tool does not process an entire tileset,
